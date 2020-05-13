@@ -10,9 +10,9 @@ output:
     fig_caption: true
 urlcolor: blue
 ---
-```{r setup, include = FALSE, fig.align = "center"}
+
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, echo = FALSE, collapse = FALSE)
-```
+
 ## 1 - Team Members
 * [**Yunting Chiu**](https://www.linkedin.com/in/yuntingchiu): tidy data, statistical analysis, project management, data mapping, data visualization.
 * **Kingsley Ofoegbu**: data analysis, data-driven hypotheses, data visualization, report writing, tidy data, regression.
@@ -26,7 +26,7 @@ The analysis is based on Global Food Safety Partnerships (GFSP) dataset from 49 
 
 ## 3 - Data Cleaning
 ### 3.1 - Loading Libraries
-```{r LoadPackages, include = FALSE}
+
 library(tidyverse)
 library(dplyr)
 library(readxl)
@@ -41,10 +41,10 @@ library(rnaturalearthdata)
 library(rgeos)
 library(ggspatial)
 library(lwgeom)
-```
+
 
 ### 3.2 - Load the data first, and reformating features
-```{r, warning=FALSE}
+
 fsa <- read_csv(file = "./data/gfspafricamapping_final_20192.csv", 
                                col_types = cols("Category" = col_factor(),
                                                 "A3_DonorCat" = col_factor(),
@@ -57,10 +57,10 @@ fsa <- read_csv(file = "./data/gfspafricamapping_final_20192.csv",
                                                 "E3_BudgetCat" = col_factor(),
                                                 "ID number" = col_character()
                                                 ), na = ".")
-```
+
 
 ### 3.3 - Reshaping with multiple columns
-```{r}
+
 fsa %>% 
   pivot_longer(cols = starts_with("A9_"),names_to = "Country",names_prefix = "A9_",
                values_to = "project_role", values_ptypes = list(logical())) %>% 
@@ -109,10 +109,10 @@ fsa %>%
 
  #rm(teempA, teempB, teempC1, teempC3, teempD2, teempD4, teempD6)
 
-```
+
 
 ### 3.4 - rename the data frame
-```{r}
+
 fsa2 %>%
   rename(B1_Project_focus =  "B1_Project focus",
          Total_budget_USD = "E1_Total_Budget",
@@ -180,10 +180,10 @@ fsa2 %>%
         mutate(A13_TimeFrame = A12_YearEnd - A11_YearInit) -> 
   fsa3
 
-```
+
 
 ### 3.5 - select the columns
-```{r}
+
 fsa3 %>%
   select(Country,A8_ImplCat, A11_YearInit:A13_TimeFrame, Activity, Commodity_cat,
          Donor_cat, NonDonor_cat, Total_budget_USD, E2_FSBudget, Category, Hazard_cat) -> 
@@ -206,15 +206,15 @@ fsa4_no_dup <- fsa4[!duplicated(fsa4),] # remove duplicate data
 
 sample_n(fsa4_no_dup,5)
 
-```
-```{r}
+
+
 # teempA %>% 
 #   mutate('E!_Total_Budget' = parse_number(str_replace('E!_Total_Budget', "^\\$(\\d*),(\\d*),(\\d*).(\\d*)","\\1\\2\\3.\\4"))) -> teempA2
-```
+
 
 ## 4 - Initial Hypotheses
 ### 4.1.1 Which countries are funded the most and the least?
-```{r}
+
 teempA %>%
   group_by(Country) %>% 
 summarize(total_budget = sum(E1_Total_Budget, na.rm = TRUE), project = n()) %>%
@@ -222,12 +222,12 @@ summarize(total_budget = sum(E1_Total_Budget, na.rm = TRUE), project = n()) %>%
 
 head(Country_desc,1)
 tail(Country_desc,1)
-```
+
 
 ### 4.1.2 Budget vs Number of project in each Country
 * Here we create scatter plots and box plots to ascertain if there is a linear relationship.\ 
 * Number of projects done per country and Total Funds allocated per country, from this scatter plot. we can see that the countries that got more fundings had more projects, there is a linear relationship between if a country gets more funding.\
-```{r, warning=FALSE}
+
 Country_desc %>%
 ggplot(aes(x = log(project), y = log(total_budget))) +
   geom_point() +
@@ -237,11 +237,11 @@ ggplot(aes(x = log(project), y = log(total_budget))) +
   ggtitle("Budget vs Number of project in each Country") +
   theme_bw()
 
-```
+
 
 ### 4.1.3 - Distribution projects in respect of the country
 * we can see each country of project type.
-```{r, fig.align = "center", fig.width = 7, fig.height = 3.8}
+
 teempA %>% 
   count(Country, Category) %>% 
   mutate(Country = fct_reorder(Country,-n)) %>% 
@@ -249,13 +249,13 @@ teempA %>%
  ggplot(aes(x= Country, y = n, fill = Category))+
   geom_col()+
   theme(axis.text.x = element_text(angle = 90))
-```
+
 
 ## 5 - Exploratory Data Analysis
 ### 5.1 - Datasets
 #### 5.1.1 - which countries are involved in the project?
 * 49 countries
-```{r}
+
 Country_desc %>%
   mutate(Country = casefold(Country, upper = FALSE),
          Country = recode(Country, "drc" = "democratic republic of the congo",
@@ -268,12 +268,12 @@ Country_desc %>%
                                    "eq guinea" = "equatorial guinea")) ->
 Country_word    
 nrow(Country_word)
-```
+
 
 ### 5.2 - Data Visualization
 #### 5.2.1 - Drawing Africa maps programmatically 
 * Obviously, the Africa map is easy to let readers know the association between the number of aid programs and each country.
-```{r, message= FALSE, warning = FALSE}
+
 # Get world map data
 world <- ne_countries(scale = "medium", returnclass = "sf")
 # Add centroid for name labels
@@ -366,11 +366,11 @@ ggplot(aes(fill = project_sum$num_projects)) +
         #scale_fill_viridis_c(option = "plasma", trans = "sqrt")+
         #geom_text(data= world,aes(x=X, y=Y, label=name),
         #color = "red", fontface = "bold", check_overlap = TRUE) 
-```
+
 
 #### 5.2.2 - The rate at with hazard affects food security in africa in each country
 * Here we know that different hazards affects different crops but what are those hazards and how much do they affect security in each country, this shows just that and with it organizations would know how to tailor their plans for specific countries.\
-```{r, fig.width = 9}
+
 fsa4_no_dup %>%
   group_by(Hazard_cat, Country) %>%
   summarize(Number_of_hazards = n()) %>%
@@ -380,11 +380,11 @@ fsa4_no_dup %>%
   theme(axis.text.x = element_text(angle = 90)) +
   ylab("Number of Hazards") +
   ggtitle("The rate at with hazard affects food security in africa in each country")
-```
+
 
 ### 5.2.3 - Which country is vegetarian and non-vegetarian? 
 * Here we want to find out which country receives what type of commodity the most.\
-```{r, fig.width = 9}
+
 fsa4_no_dup %>%
   group_by(Country, Commodity_cat) %>%
   summarize(Number_of_commodity = n()) %>%
@@ -393,12 +393,12 @@ fsa4_no_dup %>%
    theme(axis.text.x = element_text(angle = 90)) +
    ylab("Amount of produce") +
    ggtitle("Food production per country")
-```
+
 
 ### 5.3 - Statistical Inference
 #### 5.3.1 - Calculate the positive correlation with medians of Africa population and the Food Safety project. 
 * As the project start years are between 2006 to 2018(removed NA). In this case, we download the 2006-2018 Africa area total population from UN data to compare it.\
-```{r}
+
 totalpop <- read_csv(file = "./data/africatotalpopulation.csv")
 
 totalpop %>%
@@ -411,10 +411,9 @@ totalpop %>%
 
 print(africapop)
 
-```
 * Choose project start year from Food Safety In Africa data ,and plot\
 * The plot seems Food Safety project not deeply help Africa population to increase \
-```{r}
+
 teempA %>%
   select(Country, A11_YearInit) %>%
   count(A11_YearInit) %>%
@@ -434,11 +433,11 @@ popandfood %>%
   ggtitle("Project count & Africa Population") 
   
   
-```
+
 
 ### 5.3.2 - Does international investment in food in African countries affect local GDP?
 * Now, we want to analyze whether food aid to African countries has an impact on their GDP. First, take the GDP data of all the countries in Africa, and then select the data from 2006 to 2017.\
-```{r}
+
 GDP <- read_excel("./data/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_988718.xlsx") %>% 
    select(1,51:62) %>% 
   rename(Country = "Country Name") %>% 
@@ -446,10 +445,10 @@ GDP <- read_excel("./data/API_NY.GDP.MKTP.CD_DS2_en_csv_v2_988718.xlsx") %>%
   mutate(tot_gdp = `2011`+`2012`+`2013`+`2014`+`2015`+`2016`+`2017`)->
   GDP
 head(GDP)
-```
+
 
 * Then, we combine the investment table with the GDP table, and select the countries for which investment data are available.At the same time, rows with missing values and duplicate rows are cleared from the data.\ 
-```{r}
+
 Country_desc %>% 
   left_join(GDP , by = "Country" ) %>%
   na.omit() %>% 
@@ -467,11 +466,11 @@ duplicated(GDP1) #Make sure there are no duplicate rows.
   ylab("total GDP") +
   ggtitle("Budget vs total GDP of per country") +
   theme_bw ()
-```
+
 
 ## 6 -  Data-driven Hypotheses
 ### 6.1 - Here we want to test if our initial hypothesis is true (fail to reject) or not(reject)
-```{r, fig.align = "center", fig.width = 6, fig.height = 4}
+
 teempA %>%
   mutate(
     E1_Total_Budget = str_sub(E1_Total_Budget, 2,),
@@ -480,9 +479,9 @@ teempA %>%
   group_by(Country, A13_TimeFrame) %>%
   summarize(Budget = sum(E1_Total_Budget, na.rm = TRUE),
             Number_of_project = n()) -> Project1
-```
 
-```{r, fig.align = "center", fig.width = 6, fig.height = 4}
+
+
 ggplot(Project1, aes(x = log(Number_of_project), y = log(Budget), color = A13_TimeFrame)) +
   geom_point() +
   geom_smooth(method = lm, se = F) +
@@ -490,10 +489,10 @@ ggplot(Project1, aes(x = log(Number_of_project), y = log(Budget), color = A13_Ti
   xlab("Number of Projects") +
   ylab("Budget") +
   ggtitle("Budget vs Number of projects")
-```
+
 
 ### 6.2 - Multiple regression on the hypothesis:
-```{r}
+
 Project1 %>%
   mutate(Budget = log(Budget), Number_of_project = log(Number_of_project)) -> the_model
 
@@ -506,7 +505,7 @@ Model_1 <- lm(A13_TimeFrame ~ Number_of_project + Budget, the_model)
 
 summary(Model_1)
 plot(Model_1)
-```
+
 
 ## 7 - Discussion
   The project of Food Safety in Africa did not magnificently help the Africa population increasing. Therefore, it is recommended that Africa not focus on projects that are not directly linked to food, such as employee training, because this does not play a positive role in their food growth. The investment in food is conducive to the GDP growth of relevant countries.\
