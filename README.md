@@ -13,7 +13,23 @@ The analysis is based on Global Food Safety Partnerships (GFSP) dataset from 49 
 ## Discussion
   The project of Food Safety in Africa did not magnificently help the Africa population increasing. Therefore, it is recommended that Africa not focus on projects that are not directly linked to food, such as employee training, because this does not play a positive role in their food growth. The investment in food is conducive to the GDP growth of relevant countries.
   However, if you directly invest money in food, you can increase crop output, stimulate people to increase food consumption, and thus steadily increase GDP. According to the country's level and conditions, it is necessary to formulate a strategy that adapts to its own country. African countries can increase their investment in food and reduce disasters, thereby increasing food production and solving Africa's food problems.
-  
+
+## Libraries
+`tidyverse` 
+`dplyr`
+`readxl`
+`readr`
+`ggplot2`
+`spData`
+`ggthemes`
+`sf`
+`knitr`
+`rnaturalearth`
+`rnaturalearthdata`
+`rgeos`
+`ggspatial`
+`lwgeom`
+
 ## References
 * Breman, H., & Debrah, S. (2003). Improving African food security. *SAIS Review, 23(1), 153-170.*
   + *Artilce for our reference.*
